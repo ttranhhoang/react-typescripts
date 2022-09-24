@@ -24,13 +24,13 @@ const Navigation = () => {
 	];
 	return (
 		<nav className="w-full flex justify-center items-center">
-			<ul className="flex justify-evenly w-5/6 border-b-2">
+			<ul className="flex justify-evenly w-5/6 border-b">
 				{navList.map((navItem) => (
 					<li key={navItem.label} className="font-bold text-lg tracking-wide">
 						<NavLink
 							to={`${joinPaths(navItem.path)}`}
 							className={({ isActive }) =>
-								isActive ? 'text-orange-400 border-b-2 border-b-orange-400' : ''
+								isActive ? 'text-orange border-b-4 border-b-orange' : ''
 							}
 						>
 							{navItem.label}

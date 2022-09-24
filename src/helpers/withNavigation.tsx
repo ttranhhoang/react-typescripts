@@ -7,16 +7,14 @@ interface IWithNavigation {
 	navigate: ReturnType<typeof useNavigate>;
 }
 function withNavigation(Component: React.ComponentType<IWithNavigation>) {
-   function ComponentWithRouterProp(props:IWithNavigation) {
-      return (
-         <>
-            <Navigation/>
-            <Component {...props} />
-         </>
-         
-      )
-   }
-   return ComponentWithRouterProp;
+	function ComponentWithRouterProp(props: IWithNavigation) {
+		return (
+			<>
+				<Navigation />
+				<Component {...props} />
+			</>
+		);
+	}
+	return ComponentWithRouterProp;
 }
-
 export default withNavigation;

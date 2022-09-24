@@ -30,7 +30,7 @@ const Button = (props: IButton) => {
 			disabled={disabled}
 		>
 			<span className="absolute block top-0 -left[100%] w-full h-[2px] bg-gradient-to-r from-cyan-500 to-blue-500 peer-hover:left-[100%] peer-hover:transition-all"></span>
-			<span className='absolute block'></span>
+			<span className="absolute block"></span>
 			{label}
 		</button>
 	);

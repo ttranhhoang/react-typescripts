@@ -10,12 +10,7 @@ const TabPanel = (props: ITabPanel) => {
 			<ul className="flex justify-between gap-8">
 				{tabListMenu.map((tab) => (
 					<li key={tab.label} className="font-bold text-lg tracking-wide">
-						<NavLink
-							to={tab.path}
-							className={({ isActive }) =>
-								isActive ? 'text-orange-400' : ''
-							}
-						>
+						<NavLink to={tab.path} className={({ isActive }) => (isActive ? 'text-orange' : '')}>
 							{tab.label}
 						</NavLink>
 					</li>
