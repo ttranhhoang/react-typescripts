@@ -23,8 +23,8 @@ const Navigation = () => {
 		{ label: 'Statistics', path: statistics },
 	];
 	return (
-		<nav className="w-full flex justify-center items-center">
-			<ul className="flex justify-evenly w-5/6 border-b">
+		<nav className="w-full flex justify-center items-center mb-2">
+			<ul className="flex justify-around w-5/6 border-b">
 				{navList.map((navItem) => (
 					<li key={navItem.label} className="font-bold text-lg tracking-wide">
 						<NavLink

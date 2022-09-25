@@ -1,7 +1,7 @@
-import { IController } from '@/ultils/constants';
-import React, { useState, InputHTMLAttributes, ChangeEvent } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 import Label from '@/components/Label';
+import { IController } from '@/ultils/constants';
+import { ChangeEvent, InputHTMLAttributes } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 interface ICheckBox extends InputHTMLAttributes<HTMLInputElement>, IController {
 	checked?: boolean;
@@ -11,29 +11,31 @@ interface ICheckBox extends InputHTMLAttributes<HTMLInputElement>, IController {
 }
 
 const Checkbox = (props: ICheckBox) => {
-	const { checked = false, name, defaultChecked = false, id, onChange: onInputChange } = props;
+	const { checked, name, id, onChange: onInputChange, disabled } = props;
 	const { control } = useForm();
-
+	console.log('checked', checked);
 	return (
 		<>
-			<Label label={name} htmlFor={id} />
+			<Label htmlFor={id} />
 			<Controller
 				name={name ?? ''}
 				control={control}
+				defaultValue={checked}
 				render={({ field: { onChange, ref } }) => {
 					return (
 						<div className="">
 							<input
 								id={id}
 								type="checkbox"
+								ref={ref}
 								checked={checked}
-								value={checked.toString()}
+								value={checked?.toString()}
 								onChange={(event: ChangeEvent<HTMLInputElement>) => {
+									if (disabled) return;
 									onInputChange?.(event);
 									onChange(!checked);
 								}}
-								className="cursor-pointer"
-								defaultChecked={defaultChecked}
+								className="cursor-pointer border-2"
 							/>
 						</div>
 					);
