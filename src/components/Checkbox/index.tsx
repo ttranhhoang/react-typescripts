@@ -1,19 +1,19 @@
 import Label from '@/components/Label';
 import { IController } from '@/ultils/constants';
+import { ICON } from '@/ultils/icons';
 import { ChangeEvent, InputHTMLAttributes } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
+import Icon from '../Icon';
 
 interface ICheckBox extends InputHTMLAttributes<HTMLInputElement>, IController {
-	checked?: boolean;
+	checked: boolean;
 	name?: string;
 	label?: string;
 	id?: string;
 }
 
 const Checkbox = (props: ICheckBox) => {
-	const { checked, name, id, onChange: onInputChange, disabled } = props;
-	const { control } = useForm();
-	console.log('checked', checked);
+	const { checked = false, name, id, onChange: onInputChange, disabled, control } = props;
 	return (
 		<>
 			<Label htmlFor={id} />
@@ -23,7 +23,7 @@ const Checkbox = (props: ICheckBox) => {
 				defaultValue={checked}
 				render={({ field: { onChange, ref } }) => {
 					return (
-						<div className="">
+						<div className="relative w-6 h-6">
 							<input
 								id={id}
 								type="checkbox"
@@ -35,8 +35,11 @@ const Checkbox = (props: ICheckBox) => {
 									onInputChange?.(event);
 									onChange(!checked);
 								}}
-								className="cursor-pointer border-2"
+								className="cursor-pointer appearance-none"
 							/>
+							<span className="border border-gray-300 rounded-sm inline-block absolute w-full h-full inset-0 hover:border-secondary transition-all ease-linear duration-150">
+								<Icon type={ICON.CHECKED} className={`${checked ? 'visible' : 'invisible'} `} />
+							</span>
 						</div>
 					);
 				}}

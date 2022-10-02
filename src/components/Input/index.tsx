@@ -1,50 +1,86 @@
 import Icon from '@/components/Icon';
 import Label from '@/components/Label';
 import { COLORS } from '@/ultils/color';
+import { IController } from '@/ultils/constants';
 import { ICON } from '@/ultils/icons';
 import { InputHTMLAttributes } from 'react';
-import { Control, Controller } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { overrideTailwindClasses } from 'tailwind-override';
-interface IInput extends InputHTMLAttributes<HTMLInputElement> {
+interface IInput extends InputHTMLAttributes<HTMLInputElement>, IController {
 	label?: string;
 	defaultValue?: string;
-	control: Control<any, any>;
 	isSearchForm?: boolean;
+	isSearchFormCollpase?: boolean;
+	setSearchTextValue?: string;
+	typeColor?: TypeColorInput;
 }
+
+type TypeColorInput = 'orange' | 'dgray' | 'dwhite';
+
 const Input = (props: IInput) => {
 	const {
 		type,
+		typeColor,
 		control,
 		defaultValue,
 		name,
 		label,
 		disabled,
 		isSearchForm,
+		isSearchFormCollpase,
 		placeholder,
 		className,
+		onChange,
 		...otherProps
 	} = props;
+
+	const colorInput = (color: TypeColorInput) => {
+		switch (color) {
+			case 'orange':
+				return 'text-orange placeholder:text-orange';
+			case 'dgray':
+				return 'text-dgray placeholder:text-dgray';
+			case 'dwhite':
+				return 'text-dwhite placeholder:text-dwhite';
+			default:
+				break;
+		}
+	};
 	return (
 		<div className={`relative ${overrideTailwindClasses(`mb-5 ${className}`)}`}>
-			{isSearchForm ? (
-				<div className="">
-					<Label htmlFor={name} label={label} className="text-orange" />
-					<div className="flex items-center">
-						<Icon color={COLORS.ORANGE} width="24" height="30" type={ICON.SEARCH} />
+			{isSearchFormCollpase ? (
+				<div
+					className={`${
+						isSearchForm
+							? ''
+							: 'border rounded-sm border-gray-300 hover:border-black transition-colors duration-200 '
+					}`}
+				>
+					<Label htmlFor={name} label={label} className={colorInput(typeColor ?? 'orange')} />
+					<div className={`flex items-center ${isSearchForm ? '' : 'h-10'}`}>
+						<Icon
+							color={COLORS.ORANGE}
+							width="24"
+							height="30"
+							type={ICON.SEARCH}
+							className={`${isSearchForm ? '' : 'hidden'}`}
+						/>
 						<Controller
 							name={name ?? ''}
 							control={control}
-							render={({ field: { name, onChange, value, ...otherField } }) => (
+							render={({ field: { name, value, ...otherField } }) => (
 								<input
 									{...otherField}
 									{...otherProps}
 									name={name}
 									type={type}
 									placeholder={placeholder}
-									onChange={(e) => onChange(e.target.value)}
+									onChange={onChange}
 									value={value}
 									disabled={disabled}
-									className="w-full text-orange placeholder:text-orange font-bold rounded-md outline-0 p-3 bg-transparent"
+									className={`w-full ${colorInput(
+										typeColor ?? 'orange'
+									)} font-bold rounded-md outline-0 p-3 bg-transparent`}
 								/>
 							)}
 							defaultValue={defaultValue}
