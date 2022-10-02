@@ -3,6 +3,8 @@ import { useRoutes } from 'react-router-dom';
 import routes from '@/routes';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import '@/styles/app.css';
+import Spinner from './components/Spinner';
+import { COLORS } from './ultils/color';
 
 function App() {
 	const router = useRoutes(routes);
@@ -17,7 +19,9 @@ function App() {
 	return (
 		<div className="app">
 			<QueryClientProvider client={queryClient}>
-				<React.Suspense fallback={<>Loading...</>}>{router}</React.Suspense>
+				<React.Suspense fallback={<Spinner color={COLORS.SECONDARY} height="70" width="70" />}>
+					{router}
+				</React.Suspense>
 			</QueryClientProvider>
 		</div>
 	);
