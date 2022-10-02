@@ -1,6 +1,7 @@
 import Button from '@/components/Button';
 import Collapsible from '@/components/Collapsible';
 import Input from '@/components/Input';
+import Spinner from '@/components/Spinner';
 import Table from '@/components/Table';
 import { ICommonGetDataResponse } from '@/interfaces/common/common.interface';
 import {
@@ -11,6 +12,7 @@ import {
 import { getListFilterOptions } from '@/services/users/accounts/apiAccounts';
 import { getListUsers } from '@/services/users/apiUsers';
 import { getListBrands } from '@/services/users/brands/apiBrands';
+import { COLORS } from '@/ultils/color';
 import {
 	EMPTY_GUID,
 	IBooleanOptions,
@@ -158,7 +160,7 @@ const AccountsTab = () => {
 		},
 	];
 	return listFilteredOptions.isFetching ? (
-		<p>Loading ....</p>
+		<Spinner color={COLORS.SECONDARY} height="70" width="70" />
 	) : (
 		<div className="flex gap-10 mt-5">
 			<div className="flex flex-col gap-1">
