@@ -1,23 +1,32 @@
 import Button from '@/components/Button';
 import Collapsible from '@/components/Collapsible';
+import Icon from '@/components/Icon';
 import Input from '@/components/Input';
 import Table from '@/components/Table';
 import { ICommonGetDataResponse } from '@/interfaces/common/common.interface';
 import {
+	IFilterByUserRequest,
+	IGetDataRequest,
+	IGetDataResponse,
 	IGetListBrands,
 	IGetListFilterResponse,
 	IGetListUsers,
 } from '@/interfaces/users/users.interface';
 import { getListFilterOptions } from '@/services/users/accounts/apiAccounts';
-import { getListUsers } from '@/services/users/apiUsers';
+import { getListUsers, searchUser } from '@/services/users/apiUsers';
 import { getListBrands } from '@/services/users/brands/apiBrands';
 import {
 	EMPTY_GUID,
 	IBooleanOptions,
 	IColumnsDefinitionType,
+	ITableIConTools,
+	ITABLE_ID_USER,
+	KEY_TOOLS_TABLE,
+	PAGE_SIZE,
 	SEARCH_ALL_VALUE,
 } from '@/ultils/constants';
-import { useQuery } from '@/ultils/hook';
+import { useMutation, useQuery } from '@/ultils/hook';
+import { ICON } from '@/ultils/icons';
 import { QUERY_KEYS_ACCOUNTS, QUERY_KEYS_USERS } from '@/ultils/queryKey';
 import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -36,6 +45,8 @@ const AccountsTab = () => {
 	const [regionSelected, setRegionSelected] = useState<string[]>(SEARCH_ALL_VALUE);
 	const [countriesSelected, setCountriesSelected] = useState<string[]>(SEARCH_ALL_VALUE);
 	const [workplaceSelected, setWorkplaceSelected] = useState<string[]>(SEARCH_ALL_VALUE);
+	const [pageIndex, setPageIndex] = useState<number>(1);
+	const [pageSize, setPageSize] = useState();
 
 	/* --------------------------- LIST FILTER OPTIONS -------------------------- */
 	const listFilteredOptions = useQuery<ICommonGetDataResponse<IGetListFilterResponse>>(
@@ -73,7 +84,6 @@ const AccountsTab = () => {
 				})),
 		[listFilterOptions.countries, regionSelected]
 	);
-	console.log('list filter options', listFilterOptions);
 
 	/* ----------------------------- LIST WORKPLACE ----------------------------- */
 	const listWorkplaces = useMemo(
@@ -128,35 +138,74 @@ const AccountsTab = () => {
 	);
 	/* ------------------------------- LIST USERS ------------------------------- */
 	const [listUsers, setListUsers] = useState<IGetListUsers[]>([]);
-	useQuery<ICommonGetDataResponse<IGetListUsers[]>>(
-		[QUERY_KEYS_USERS.GET_LIST_USERS],
-		() => getListUsers(),
-		{
-			onSuccess: (res) => {
-				setListUsers(res.data.data);
-			},
-			onError: (err) => {
-				console.log('err', err.data.errorMessage);
-			},
-		}
-	);
+	// useQuery<ICommonGetDataResponse<IGetListUsers[]>>(
+	// 	[QUERY_KEYS_USERS.GET_LIST_USERS],
+	// 	() => getListUsers(),
+	// 	{
+	// 		onSuccess: (res) => {
+	// 			setListUsers(
+	// 				res.data.data.map((e) => ({
+	// 					...e,
+	// 					tools: toolsIcon.map((e) => e),
+	// 				}))
+	// 			);
+	// 		},
+	// 		onError: (err) => {
+	// 			console.log('err', err.data.errorMessage);
+	// 		},
+	// 	}
+	// );
+	console.log('listUsers', listUsers);
+	const filterListUsers = useMutation<
+		IGetDataResponse<IGetListUsers[]>,
+		IGetDataRequest<IGetListUsers, IFilterByUserRequest>
+	>(searchUser, {
+		onSuccess: (res) => {
+			console.log('res data', res.data.data);
+			setListUsers(res.data.data.map((e) => e));
+		},
+		onError: (err) => {
+			console.log('err', err.data.errorMessage);
+		},
+	});
 	const [resetFilter, setResetFilter] = useState<boolean>(false);
 
-	const columns: IColumnsDefinitionType<IGetListUsers, keyof IGetListUsers>[] = [
+	const columns: IColumnsDefinitionType<IGetListUsers>[] = [
 		{
 			key: 'fullName',
 			header: 'Name',
-			width: 150,
 		},
 		{
 			key: 'email',
 			header: 'Email',
 		},
 		{
-			key: 'fullName',
-			header: 'Color',
+			key: KEY_TOOLS_TABLE.TOOLS,
+			header: 'Tools',
+			groupLabelTools: ['EDIT', 'DELETE'],
 		},
 	];
+
+	const toolsIcon: ITableIConTools[] = [
+		{
+			key: 1,
+			icon: (data: IGetListUsers, tableId: ITABLE_ID_USER) => (
+				<Icon type={ICON.PENCIL} onClick={() => {}} />
+			),
+		},
+		{
+			key: 2,
+			icon: (data: IGetListUsers) => <Icon type={ICON.PENCIL} onClick={() => {}} />,
+		},
+	];
+	const handleSearchFilterMutate = (filterBy: IFilterByUserRequest) => {
+		filterListUsers.mutate({
+			filterBy,
+			orderBy,
+			pageIndex,
+			pageSize: PAGE_SIZE,
+		});
+	};
 	return listFilteredOptions.isFetching ? (
 		<p>Loading ....</p>
 	) : (

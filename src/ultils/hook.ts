@@ -6,7 +6,6 @@ import {
 	QueryFunction,
 	UseQueryOptions,
 	UseQueryResult,
-	MutationKey,
 	UseMutationOptions,
 	UseMutationResult,
 } from 'react-query';
@@ -24,12 +23,11 @@ export function useQuery<TData = any, TQueryFnData = any, TQueryKey extends Quer
 }
 
 export function useMutation<TData = any, TVariables = any, TContext = unknown>(
-	mutationKey: MutationKey,
 	mutationFn?: any,
 	options?: Omit<
 		UseMutationOptions<AxiosResponse<TData>, AxiosResponse<IErrorResponse>, TVariables, TContext>,
-		'mutationKey' | 'mutationFn'
+		'mutationFn'
 	>
 ): UseMutationResult<AxiosResponse<TData>, AxiosResponse<IErrorResponse>, TVariables, TContext> {
-	return useMutationLib(mutationKey, mutationFn, options);
+	return useMutationLib(mutationFn, options);
 }
