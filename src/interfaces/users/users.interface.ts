@@ -97,6 +97,7 @@ export interface IGetListCommunities {
 	isDeleted: boolean;
 }
 
+/* ---------------------------------- USERS --------------------------------- */
 export interface IGetListUsers {
 	userId: string;
 	fullName: string;
@@ -104,4 +105,33 @@ export interface IGetListUsers {
 	sentWelcomeEmail: boolean;
 	accountStatus: string;
 	hasAccessToFrontOffice: boolean;
+}
+
+export interface ICommonOrder<TOrder> {}
+
+export interface IGetDataResponse<TData = any> {
+	data: TData;
+	totalItems?: number;
+	totalPages?: number;
+	pageIndex?: number;
+	pageSize?: number;
+}
+export interface IGetDataRequest<TOrder, TFilter> {
+	pageIndex: number;
+	pageSize: number;
+	orderBy: ICommonOrder<TOrder>;
+	filterBy: TFilter;
+}
+export interface IFilterByUserRequest {
+	regionIds: string[];
+	countryIds: string[];
+	workplaceIds: string[];
+	brandIds: string[];
+	hasAccessToFrontOffice: string[];
+	frontOfficeRoleIds: string[];
+	backOfficeAdministrationAccessIds: string[];
+	sentWelcomeEmail: string[];
+	accountStatuses: string[];
+	communityIds: string[];
+	textSearch: string;
 }
