@@ -1,6 +1,6 @@
 import { EMPTY_GUID, IOption } from '@/ultils/constants';
 import { COLORS } from '@/ultils/color';
-import { ICON } from '@/ultils/icons';
+import { TYPE_ICONS } from '@/ultils/icons';
 import Input from '../Input';
 import React, {
 	HTMLAttributes,
@@ -77,9 +77,9 @@ interface ICollapsible extends HTMLAttributes<HTMLDivElement> {
 	isSearchForm?: boolean;
 	isSearchFormCollpase?: boolean;
 	onSelectOptions: (options: IOption[]) => void;
+	typeScrollbar?: ITypeScrollbar;
 
 	searchEnabled?: boolean;
-	typeScrollbar?: ITypeScrollbar;
 	defaultValues?: string[];
 	isReset?: boolean;
 	isRadioButton?: boolean;
@@ -242,6 +242,7 @@ const Collapsible = (props: ICollapsible) => {
 				return 'primary-scrollbar';
 		}
 	}, []);
+	console.log('type scrooll bar', typeScrollbar);
 
 	// const Header = useMemo(
 	// 	() => (
@@ -266,7 +267,7 @@ const Collapsible = (props: ICollapsible) => {
 	// );
 
 	return (
-		<div {...otherProps} className={overrideTailwindClasses(`w-60 mb-3 ${className}`)}>
+		<div {...otherProps} className={overrideTailwindClasses(`w-60 mb-3  ${className ?? ''}`)}>
 			<div
 				className="flex justify-between rounded-br-2xl relative cursor-pointer py-1.5 px-2.5"
 				style={{ backgroundColor: titleBackgroundColor }}
@@ -278,11 +279,11 @@ const Collapsible = (props: ICollapsible) => {
 						isOpen ? '-rotate-180' : 'rotate-0'
 					}`}
 				>
-					<Icon type={ICON.CHEVRON} height="24" width="24" color={COLORS.GRAY} />
+					<Icon type={TYPE_ICONS.CHEVRON} height="24" width="24" color={COLORS.GRAY} />
 				</span>
 			</div>
 			<div
-				className={'w-full overflow-hidden transition-all linear duration-500'}
+				className="w-full overflow-hidden transition-all linear duration-500 "
 				style={{ height }}
 			>
 				<div ref={ref}>
@@ -298,7 +299,9 @@ const Collapsible = (props: ICollapsible) => {
 						onChange={handleSearch}
 					/>
 
-					<div className={'w-full max-h-52 overflow-y-auto px-1'}>
+					<div
+						className={`w-full max-h-52 overflow-y-auto px-1 ${checkTypeScrollbar(typeScrollbar)}`}
+					>
 						<FilterOption
 							key={0}
 							option={OPTION_GUID_ALL}

@@ -1,7 +1,9 @@
 import { joinPaths } from '@/helpers/getPathString';
 import { IListNavigation } from '@/interfaces/ListNavigation';
 import { ROUTERS_NAME } from '@/routes/routesname';
+import { TYPE_ICONS } from '@/ultils/icons';
 import { NavLink } from 'react-router-dom';
+import Icon from '../Icon';
 
 const { users, settings, manageFrontOffice, courses, classroom, translation, statistics } =
 	ROUTERS_NAME;
@@ -23,22 +25,25 @@ const Navigation = () => {
 		{ label: 'Statistics', path: statistics },
 	];
 	return (
-		<nav className="w-full flex justify-center items-center mb-2">
-			<ul className="flex justify-around w-5/6 border-b">
-				{navList.map((navItem) => (
-					<li key={navItem.label} className="font-bold text-lg tracking-wide">
-						<NavLink
-							to={`${joinPaths(navItem.path)}`}
-							className={({ isActive }) =>
-								isActive ? 'text-orange border-b-4 border-b-orange' : ''
-							}
-						>
-							{navItem.label}
-						</NavLink>
-					</li>
-				))}
-			</ul>
-		</nav>
+		<div className="w-full flex gap-10 items-center ">
+			<Icon type={TYPE_ICONS.CLOUD_DOWNLOAD} />
+			<nav className="w-full flex mb-2">
+				<ul className="flex justify-between w-full border-b  border-secondary">
+					{navList.map((navItem) => (
+						<li key={navItem.label} className="font-bold text-lg tracking-wide mb-2">
+							<NavLink
+								to={`${joinPaths(navItem.path)}`}
+								className={({ isActive }) =>
+									isActive ? 'text-orange border-b-4 pb-2 border-b-orange' : ''
+								}
+							>
+								{navItem.label}
+							</NavLink>
+						</li>
+					))}
+				</ul>
+			</nav>
+		</div>
 	);
 };
 

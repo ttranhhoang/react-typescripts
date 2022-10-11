@@ -25,7 +25,7 @@ const TableRows = (props: ITableRows) => {
 						))}
 					</div>
 				) : (
-					<div key={`cell-${index2}`} className="truncate text-clip flex">
+					<div key={`cell-${index2}`} className="truncate text-clip flex items-center">
 						{row[column.key]}
 					</div>
 				)

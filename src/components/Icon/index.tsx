@@ -14,7 +14,7 @@ const Icon = (props: IIcon) => {
 			style={{ width, height }}
 			viewBox="0 0 24 24"
 			{...otherProps}
-			className={overrideTailwindClasses(`block ${className}`)}
+			className={overrideTailwindClasses(`block cursor-pointer ${className}`)}
 		>
 			<path fill={color} d={type} />
 		</svg>

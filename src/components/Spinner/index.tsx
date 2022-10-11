@@ -1,4 +1,4 @@
-import { ICON } from '@/ultils/icons';
+import { TYPE_ICONS } from '@/ultils/icons';
 import { overrideTailwindClasses } from 'tailwind-override';
 import Icon from '../Icon';
 
@@ -16,7 +16,7 @@ const Spinner = (props: ISpinner) => {
 				`flex justify-center items-center animate-spin ${className}`
 			)}
 		>
-			<Icon type={ICON.SPINNER} color={color} width={width} height={height} />
+			<Icon type={TYPE_ICONS.SPINNER} color={color} width={width} height={height} />
 		</div>
 	);
 };
