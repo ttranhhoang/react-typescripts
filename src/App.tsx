@@ -2,7 +2,6 @@ import React from 'react';
 import { useRoutes } from 'react-router-dom';
 import routes from '@/routes';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import '@/styles/app.css';
 import Spinner from './components/Spinner';
 import { COLORS } from './ultils/color';
 
