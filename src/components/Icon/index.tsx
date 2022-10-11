@@ -1,4 +1,5 @@
 import { SVGProps } from 'react';
+import { overrideTailwindClasses } from 'tailwind-override';
 
 interface IIcon extends SVGProps<SVGSVGElement> {
 	width?: string;
@@ -7,9 +8,14 @@ interface IIcon extends SVGProps<SVGSVGElement> {
 	type: string;
 }
 const Icon = (props: IIcon) => {
-	const { color, height = 24, width = 24, type, ...otherProps } = props;
+	const { color, height = 24, width = 24, type, className, ...otherProps } = props;
 	return (
-		<svg style={{ width, height }} viewBox="0 0 24 24" {...otherProps}>
+		<svg
+			style={{ width, height }}
+			viewBox="0 0 24 24"
+			{...otherProps}
+			className={overrideTailwindClasses(`block ${className}`)}
+		>
 			<path fill={color} d={type} />
 		</svg>
 	);

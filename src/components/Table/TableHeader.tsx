@@ -1,33 +1,50 @@
+import { COLORS } from '@/ultils/color';
 import { IColumnsDefinitionType } from '@/ultils/constants';
+import { TYPE_ICONS } from '@/ultils/icons';
+import Icon from '../Icon';
 import TableRows from './TableRows';
 
 interface ITableHeader {
 	columns: Array<IColumnsDefinitionType>;
 	data: any[];
+	enableSort?: boolean;
+	getSortValue?: (key: any) => void;
 }
 const TableHeader = (props: ITableHeader) => {
-	const { columns, data } = props;
+	const { columns, data, enableSort, getSortValue } = props;
+
 	const renderHeaders = columns.map((column, index) => (
 		<div
 			key={index}
-			className={`w-full ${column.groupLabelTools ? 'text-center py-2.5' : 'text-left py-5'}`}
+			className={`${
+				column.groupLabelTools
+					? 'text-center py-2.5 flex flex-col'
+					: 'text-left py-4 flex justify-start'
+			}`}
 		>
 			<div
 				className={`${
-					column.groupLabelTools && column.groupLabelTools.length === 2
-						? 'w-2/3 mx-auto relative '
-						: ''
+					column.groupLabelTools && column.groupLabelTools.length ? 'w-full relative' : ''
 				}`}
 			>
-				<div className={`${column.groupLabelTools ? 'ml-5 block' : ''}`}>{column.header}</div>
-				{column.groupLabelTools ? (
-					<div className="flex items-center justify-center gap-2 absolute -bottom-[70%] left-[40%]">
+				<div className={`${column.groupLabelTools ? 'ml-[37%]' : 'flex flex-col items-center'}`}>
+					<span className="text-xs font-bold uppercase text-dgray">{column.header}</span>
+					{enableSort && !column.groupLabelTools && (
+						<span>
+							<Icon
+								type={TYPE_ICONS.TRIANGLE_DOWN}
+								color={COLORS.ORANGE}
+								onClick={() => getSortValue && getSortValue(column.key)}
+							/>
+						</span>
+					)}
+				</div>
+				{column.groupLabelTools && (
+					<div className="flex items-center justify-center gap-3 absolute -bottom-[70%] right-[13%]">
 						{column.groupLabelTools.map((col, index) => (
 							<span
-								className={`text-sm font-thin ${
-									column.groupLabelTools && column.groupLabelTools.length - 1 === index
-										? ''
-										: 'pr-2 border-r-2'
+								className={`text-xs font-thin ${
+									column.groupLabelTools ? 'border-l-2 pl-2.5 first:border-l-0' : ''
 								}`}
 								key={index}
 							>
@@ -35,12 +52,11 @@ const TableHeader = (props: ITableHeader) => {
 							</span>
 						))}
 					</div>
-				) : (
-					<></>
 				)}
 			</div>
 		</div>
 	));
+
 	return (
 		<>
 			<div
