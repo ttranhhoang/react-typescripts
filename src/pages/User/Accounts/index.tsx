@@ -1,3 +1,5 @@
+import IconActived from '@/components/IconActived';
+import ActionButton from '@/components/ActionButton';
 import Button from '@/components/Button';
 import Collapsible from '@/components/Collapsible';
 import Icon from '@/components/Icon';
@@ -6,36 +8,43 @@ import Spinner from '@/components/Spinner';
 import Table from '@/components/Table';
 import { ICommonGetDataResponse } from '@/interfaces/common/common.interface';
 import {
+	DEFAULT_USER_FILTER,
 	IFilterByUserRequest,
 	IGetDataRequest,
 	IGetDataResponse,
 	IGetListBrands,
 	IGetListFilterResponse,
 	IGetListUsers,
+	TOrderDirection,
 } from '@/interfaces/users/users.interface';
 import { getListFilterOptions } from '@/services/users/accounts/apiAccounts';
-import { getListUsers, searchUser } from '@/services/users/apiUsers';
+import { searchUser } from '@/services/users/apiUsers';
 import { getListBrands } from '@/services/users/brands/apiBrands';
 import { COLORS } from '@/ultils/color';
 import {
+	ACCOUNTS_STATUS,
 	EMPTY_GUID,
 	IBooleanOptions,
 	IColumnsDefinitionType,
 	ITableIConTools,
 	ITABLE_ID_USER,
 	KEY_TOOLS_TABLE,
+	ORDER_USER,
 	PAGE_SIZE,
 	SEARCH_ALL_VALUE,
 } from '@/ultils/constants';
 import { useMutation, useQuery } from '@/ultils/hook';
-import { ICON } from '@/ultils/icons';
-import { QUERY_KEYS_ACCOUNTS, QUERY_KEYS_USERS } from '@/ultils/queryKey';
-import { useState, useMemo } from 'react';
+import { TYPE_ICONS } from '@/ultils/icons';
+import { orderListForQuery } from '@/ultils/orderListForQuery';
+import { QUERY_KEYS_ACCOUNTS } from '@/ultils/queryKey';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const AccountsTab = () => {
 	const { control } = useForm();
+	const navigate = useNavigate();
 	const [listFilterOptions, setListFilterOptions] = useState<IGetListFilterResponse>({
 		regions: [],
 		communities: [],
@@ -48,7 +57,8 @@ const AccountsTab = () => {
 	const [countriesSelected, setCountriesSelected] = useState<string[]>(SEARCH_ALL_VALUE);
 	const [workplaceSelected, setWorkplaceSelected] = useState<string[]>(SEARCH_ALL_VALUE);
 	const [pageIndex, setPageIndex] = useState<number>(1);
-	const [pageSize, setPageSize] = useState();
+	const [direction, setDirection] = useState<TOrderDirection>('asc');
+	const [keySortTable, setKeySortTable] = useState<keyof IGetListUsers>('fullName');
 
 	/* --------------------------- LIST FILTER OPTIONS -------------------------- */
 	const listFilteredOptions = useQuery<ICommonGetDataResponse<IGetListFilterResponse>>(
@@ -140,36 +150,34 @@ const AccountsTab = () => {
 	);
 	/* ------------------------------- LIST USERS ------------------------------- */
 	const [listUsers, setListUsers] = useState<IGetListUsers[]>([]);
-	// useQuery<ICommonGetDataResponse<IGetListUsers[]>>(
-	// 	[QUERY_KEYS_USERS.GET_LIST_USERS],
-	// 	() => getListUsers(),
-	// 	{
-	// 		onSuccess: (res) => {
-	// 			setListUsers(
-	// 				res.data.data.map((e) => ({
-	// 					...e,
-	// 					tools: toolsIcon.map((e) => e),
-	// 				}))
-	// 			);
-	// 		},
-	// 		onError: (err) => {
-	// 			console.log('err', err.data.errorMessage);
-	// 		},
-	// 	}
-	// );
-	console.log('listUsers', listUsers);
 	const filterListUsers = useMutation<
 		IGetDataResponse<IGetListUsers[]>,
 		IGetDataRequest<IGetListUsers, IFilterByUserRequest>
 	>(searchUser, {
 		onSuccess: (res) => {
+			setListUsers(
+				res.data.data.map((e) => ({
+					...e,
+					fullName: (
+						<div key={e.userId} className="flex gap-8 items-center">
+							<IconActived
+								typeIcon={TYPE_ICONS.ACCOUNT_BADGE}
+								checked={e.accountStatus === ACCOUNTS_STATUS.Activated}
+							/>
+							{e.fullName}
+						</div>
+					),
+					tools: toolsIcon,
+				}))
+			);
 			console.log('res data', res.data.data);
-			setListUsers(res.data.data.map((e) => e));
 		},
 		onError: (err) => {
 			console.log('err', err.data.errorMessage);
 		},
 	});
+	console.log('listUsers', listUsers);
+
 	const [resetFilter, setResetFilter] = useState<boolean>(false);
 
 	const columns: IColumnsDefinitionType<IGetListUsers>[] = [
@@ -184,7 +192,7 @@ const AccountsTab = () => {
 		{
 			key: KEY_TOOLS_TABLE.TOOLS,
 			header: 'Tools',
-			groupLabelTools: ['EDIT', 'DELETE'],
+			groupLabelTools: ['EDIT', 'DELETE', ''],
 		},
 	];
 
@@ -192,26 +200,58 @@ const AccountsTab = () => {
 		{
 			key: 1,
 			icon: (data: IGetListUsers, tableId: ITABLE_ID_USER) => (
-				<Icon type={ICON.PENCIL} onClick={() => {}} />
+				<Icon
+					type={TYPE_ICONS.PENCIL}
+					color={COLORS.GRAY}
+					width="30"
+					height="30"
+					className="-rotate-90"
+					onClick={() => navigate('')}
+				/>
 			),
 		},
 		{
 			key: 2,
-			icon: (data: IGetListUsers) => <Icon type={ICON.PENCIL} onClick={() => {}} />,
+			icon: (data: IGetListUsers) => (
+				<Icon
+					type={TYPE_ICONS.BIN}
+					color={COLORS.GRAY}
+					width="30"
+					height="30"
+					onClick={() => navigate('')}
+				/>
+			),
+		},
+		{
+			key: 3,
+			icon: (data: IGetListUsers) => (
+				<IconActived
+					typeIcon={TYPE_ICONS.MAIL}
+					checked={data.sentWelcomeEmail}
+					className={`${
+						data.accountStatus === ACCOUNTS_STATUS.Activated ? 'opacity-40 pointer-events-none' : ''
+					}`}
+				/>
+			),
 		},
 	];
 	const handleSearchFilterMutate = (filterBy: IFilterByUserRequest) => {
 		filterListUsers.mutate({
 			filterBy,
-			orderBy,
+			orderBy: orderListForQuery<IGetListUsers>(ORDER_USER, keySortTable, direction),
 			pageIndex,
 			pageSize: PAGE_SIZE,
 		});
+		console.log('order', orderListForQuery<IGetListUsers>(ORDER_USER, keySortTable, direction));
 	};
+	useEffect(() => {
+		handleSearchFilterMutate(DEFAULT_USER_FILTER);
+	}, [direction, keySortTable]);
+
 	return listFilteredOptions.isFetching ? (
 		<Spinner color={COLORS.SECONDARY} height="70" width="70" />
 	) : (
-		<div className="flex gap-10 mt-5">
+		<div className="flex gap-10 mt-8">
 			<div className="flex flex-col gap-1">
 				<Collapsible
 					label="Region"
@@ -226,6 +266,7 @@ const AccountsTab = () => {
 					onSelectOptions={(e) => {
 						setRegionSelected(e.map((regionSelected) => regionSelected.value));
 					}}
+					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Country/Market"
@@ -239,6 +280,7 @@ const AccountsTab = () => {
 					onSelectOptions={(e) => {
 						setCountriesSelected(e.map((coutriesSelected) => coutriesSelected.value));
 					}}
+					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Workplace"
@@ -252,6 +294,7 @@ const AccountsTab = () => {
 					onSelectOptions={(e) =>
 						setWorkplaceSelected(e.map((workplaceSelected) => workplaceSelected.value))
 					}
+					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Brands"
@@ -270,6 +313,7 @@ const AccountsTab = () => {
 							label: e.label,
 						}))
 					}
+					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Communities"
@@ -285,6 +329,7 @@ const AccountsTab = () => {
 							label: e.label,
 						}))
 					}
+					typeScrollbar="secondary"
 				/>
 				<Input control={control} isSearchFormCollpase placeholder="Search..." typeColor="dgray" />
 				<Button label="Search" onClick={() => console.log('clicked')}></Button>
@@ -306,6 +351,7 @@ const AccountsTab = () => {
 					onSelectOptions={(e) => {
 						setRegionSelected(e.map((regionSelected) => regionSelected.value));
 					}}
+					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Role"
@@ -319,6 +365,7 @@ const AccountsTab = () => {
 					onSelectOptions={(e) => {
 						setRegionSelected(e.map((regionSelected) => regionSelected.value));
 					}}
+					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Welcome Email"
@@ -335,9 +382,35 @@ const AccountsTab = () => {
 					onSelectOptions={(e) => {
 						setRegionSelected(e.map((regionSelected) => regionSelected.value));
 					}}
+					typeScrollbar="secondary"
 				/>
 			</div>
-			<Table title="User" data={listUsers} columns={columns} />
+			<Table
+				title="User"
+				data={listUsers}
+				columns={columns}
+				enableSort
+				actionButton={[
+					<ActionButton
+						key={1}
+						titleAction="Add a new User"
+						typeIcon={TYPE_ICONS.PLUS_CIRCLE}
+						color={COLORS.WHITE_SNOW}
+						onClick={() => navigate('/')}
+					/>,
+					<ActionButton
+						key={2}
+						titleAction="Import User"
+						typeIcon={TYPE_ICONS.ACCOUNT_PLUS}
+						color={COLORS.WHITE_SNOW}
+						onClick={() => navigate('/')}
+					/>,
+				]}
+				getSortValue={(key: any) => {
+					setDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+					setKeySortTable(key as any);
+				}}
+			/>
 		</div>
 	);
 };

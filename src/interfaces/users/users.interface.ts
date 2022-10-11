@@ -1,3 +1,5 @@
+import { ACCOUNTS_STATUS, BOOLEAN_OPTIONS, SEARCH_ALL_VALUE } from '@/ultils/constants';
+
 export interface IGetRegionByIdResponse {
 	regionId: string;
 	regionName: string;
@@ -100,15 +102,29 @@ export interface IGetListCommunities {
 /* ---------------------------------- USERS --------------------------------- */
 export interface IGetListUsers {
 	userId: string;
-	fullName: string;
+	fullName: string | React.ReactNode;
 	email: string;
 	sentWelcomeEmail: boolean;
-	accountStatus: string;
+	accountStatus: ACCOUNTS_STATUS;
 	hasAccessToFrontOffice: boolean;
 }
+export type TOrderDirection = 'asc' | 'desc';
 
 export interface ICommonOrder<TOrder> {}
 
+export const DEFAULT_USER_FILTER: IFilterByUserRequest = {
+	accountStatuses: [ACCOUNTS_STATUS.All],
+	backOfficeAdministrationAccessIds: SEARCH_ALL_VALUE,
+	brandIds: SEARCH_ALL_VALUE,
+	countryIds: SEARCH_ALL_VALUE,
+	frontOfficeRoleIds: SEARCH_ALL_VALUE,
+	hasAccessToFrontOffice: [BOOLEAN_OPTIONS.true],
+	regionIds: SEARCH_ALL_VALUE,
+	sentWelcomeEmail: [BOOLEAN_OPTIONS.all],
+	workplaceIds: SEARCH_ALL_VALUE,
+	textSearch: '',
+	communityIds: SEARCH_ALL_VALUE,
+};
 export interface IGetDataResponse<TData = any> {
 	data: TData;
 	totalItems?: number;
