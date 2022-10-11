@@ -2,7 +2,7 @@ import Icon from '@/components/Icon';
 import Label from '@/components/Label';
 import { COLORS } from '@/ultils/color';
 import { IController } from '@/ultils/constants';
-import { ICON } from '@/ultils/icons';
+import { TYPE_ICONS } from '@/ultils/icons';
 import { InputHTMLAttributes } from 'react';
 import { Controller } from 'react-hook-form';
 import { overrideTailwindClasses } from 'tailwind-override';
@@ -62,8 +62,8 @@ const Input = (props: IInput) => {
 							color={COLORS.ORANGE}
 							width="24"
 							height="30"
-							type={ICON.SEARCH}
-							className={`${isSearchForm ? '' : 'hidden'}`}
+							type={TYPE_ICONS.SEARCH}
+							className={`${isSearchForm ? 'block' : 'hidden'}`}
 						/>
 						<Controller
 							name={name ?? ''}

@@ -1,6 +1,6 @@
 import Label from '@/components/Label';
 import { IController } from '@/ultils/constants';
-import { ICON } from '@/ultils/icons';
+import { TYPE_ICONS } from '@/ultils/icons';
 import { ChangeEvent, InputHTMLAttributes } from 'react';
 import { Controller } from 'react-hook-form';
 import Icon from '../Icon';
@@ -38,7 +38,10 @@ const Checkbox = (props: ICheckBox) => {
 								className="cursor-pointer appearance-none"
 							/>
 							<span className="border border-gray-300 rounded-sm inline-block absolute w-full h-full inset-0 hover:border-secondary transition-all ease-linear duration-150">
-								<Icon type={ICON.CHECKED} className={`${checked ? 'visible' : 'invisible'} `} />
+								<Icon
+									type={TYPE_ICONS.CHECKED}
+									className={`${checked ? 'visible' : 'invisible'} `}
+								/>
 							</span>
 						</div>
 					);
