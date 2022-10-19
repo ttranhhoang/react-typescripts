@@ -16,13 +16,16 @@
 		"isolatedModules": true,
 		"noEmit": true,
 		"jsx": "react-jsx",
-
 		"baseUrl": ".",
+		// config direct file src/ = @/
 		"paths": {
 			"@/*": ["./src/*"],
 			"@@/*": ["./*"]
 		},
-		"typeRoots": ["./node_modules/@types", "./src/@types"]
+		"typeRoots": ["./node_modules/@types", "./src/@types"],
+		// setting mobx
+		"useDefineForClassFields": true,
+		"experimentalDecorators": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules"]
