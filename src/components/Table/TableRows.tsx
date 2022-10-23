@@ -1,10 +1,14 @@
+import { COLORS } from '@/ultils/color';
 import { IColumnsDefinitionType, KEY_TOOLS_TABLE } from '@/ultils/constants';
+import Spinner from '../Spinner';
+import TableLoading from './TableLoading';
 interface ITableRows {
 	columns: Array<IColumnsDefinitionType>;
 	data: any[];
+	isLoading: boolean;
 }
 const TableRows = (props: ITableRows) => {
-	const { columns, data } = props;
+	const { columns, data, isLoading } = props;
 	const renderRowsData = data.map((row, index) => (
 		<div
 			key={`row-${index}`}
@@ -20,13 +24,24 @@ const TableRows = (props: ITableRows) => {
 					<div key={`cell-${index2}`} className="flex justify-end items-center gap-5 mr-2">
 						{row[column.key].map((e: any, index: number) => (
 							<span key={index} className="inline-block">
-								{e.icon(row, column)}
+								{isLoading ? (
+									<Spinner color={COLORS.SECONDARY} height={14} width={14}></Spinner>
+								) : (
+									e.icon(row, column)
+								)}
 							</span>
 						))}
 					</div>
 				) : (
-					<div key={`cell-${index2}`} className="truncate text-clip flex items-center">
-						{row[column.key]}
+					<div
+						key={`cell-${index2}`}
+						className="truncate text-clip flex items-center h-full w-full"
+					>
+						{isLoading ? (
+							<TableLoading width={150} height={7} borderRadius={10} color={COLORS.GRAY} />
+						) : (
+							row[column.key]
+						)}
 					</div>
 				)
 			)}

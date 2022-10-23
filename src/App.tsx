@@ -16,9 +16,9 @@ function App() {
 		},
 	});
 	return (
-		<div className="app git test rebase">
+		<div className="app">
 			<QueryClientProvider client={queryClient}>
-				<React.Suspense fallback={<Spinner color={COLORS.SECONDARY} height="70" width="70" />}>
+				<React.Suspense fallback={<Spinner color={COLORS.SECONDARY} height={70} width={70} />}>
 					{router}
 				</React.Suspense>
 			</QueryClientProvider>

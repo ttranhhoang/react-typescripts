@@ -2,8 +2,8 @@ import { SVGProps } from 'react';
 import { overrideTailwindClasses } from 'tailwind-override';
 
 interface IIcon extends SVGProps<SVGSVGElement> {
-	width?: string;
-	height?: string;
+	width?: number;
+	height?: number;
 	color?: string;
 	type: string;
 }

@@ -41,9 +41,12 @@ import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useStore } from '@/pages/stores';
+import Pagination from 'rc-pagination';
 
 const AccountsTab = () => {
-	const { control } = useForm();
+	const { control, handleSubmit } = useForm<IFilterByUserRequest>();
+	const { accounts } = useStore();
 	const navigate = useNavigate();
 	const [listFilterOptions, setListFilterOptions] = useState<IGetListFilterResponse>({
 		regions: [],
@@ -53,10 +56,15 @@ const AccountsTab = () => {
 		workplaces: [],
 	});
 
-	const [regionSelected, setRegionSelected] = useState<string[]>(SEARCH_ALL_VALUE);
-	const [countriesSelected, setCountriesSelected] = useState<string[]>(SEARCH_ALL_VALUE);
-	const [workplaceSelected, setWorkplaceSelected] = useState<string[]>(SEARCH_ALL_VALUE);
+	const [regionSelected, setRegionSelected] = useState<string[]>(accounts.filterOptions.regionIds);
+	const [countriesSelected, setCountriesSelected] = useState<string[]>(
+		accounts.filterOptions.countryIds
+	);
+	const [workplaceSelected, setWorkplaceSelected] = useState<string[]>(
+		accounts.filterOptions.workplaceIds
+	);
 	const [pageIndex, setPageIndex] = useState<number>(1);
+	const [total, setTotal] = useState<number>(0);
 	const [direction, setDirection] = useState<TOrderDirection>('asc');
 	const [keySortTable, setKeySortTable] = useState<keyof IGetListUsers>('fullName');
 
@@ -170,6 +178,7 @@ const AccountsTab = () => {
 					tools: toolsIcon,
 				}))
 			);
+			setTotal(res.data.totalItems || 0);
 			console.log('res data', res.data.data);
 		},
 		onError: (err) => {
@@ -203,8 +212,8 @@ const AccountsTab = () => {
 				<Icon
 					type={TYPE_ICONS.PENCIL}
 					color={COLORS.GRAY}
-					width="30"
-					height="30"
+					width={30}
+					height={30}
 					className="-rotate-90"
 					onClick={() => navigate('')}
 				/>
@@ -216,8 +225,8 @@ const AccountsTab = () => {
 				<Icon
 					type={TYPE_ICONS.BIN}
 					color={COLORS.GRAY}
-					width="30"
-					height="30"
+					width={30}
+					height={30}
 					onClick={() => navigate('')}
 				/>
 			),
@@ -239,107 +248,140 @@ const AccountsTab = () => {
 		filterListUsers.mutate({
 			filterBy,
 			orderBy: orderListForQuery<IGetListUsers>(ORDER_USER, keySortTable, direction),
-			pageIndex,
+			pageIndex: pageIndex,
 			pageSize: PAGE_SIZE,
 		});
 		console.log('order', orderListForQuery<IGetListUsers>(ORDER_USER, keySortTable, direction));
 	};
 	useEffect(() => {
 		handleSearchFilterMutate(DEFAULT_USER_FILTER);
-	}, [direction, keySortTable]);
+	}, [direction, keySortTable, pageIndex]);
+
+	const handleSearchData = (value: IFilterByUserRequest) => {
+		setPageIndex(1);
+		setResetFilter(false);
+		const { textSearch } = value;
+		const { setSearchData } = accounts;
+		setSearchData({
+			...accounts.filterOptions,
+			textSearch,
+		});
+		handleSearchFilterMutate({
+			...accounts.filterOptions,
+			textSearch,
+		});
+		console.log('textSearch', textSearch);
+		console.log('options', { ...accounts.filterOptions });
+	};
+	const isFetchingData = (): boolean => {
+		return listFilteredOptions.isFetching || filterListUsers.isLoading;
+	};
 
 	return listFilteredOptions.isFetching ? (
-		<Spinner color={COLORS.SECONDARY} height="70" width="70" />
+		<Spinner color={COLORS.SECONDARY} height={70} width={70} />
 	) : (
 		<div className="flex gap-10 mt-8">
-			<div className="flex flex-col gap-1">
-				<Collapsible
-					label="Region"
-					name="Search"
-					placeholder="Search"
-					isSearchForm
-					isSearchFormCollpase
-					defaultCollapsed
-					options={listRegions}
-					isReset={resetFilter}
-					defaultValues={resetFilter ? SEARCH_ALL_VALUE : regionSelected}
-					onSelectOptions={(e) => {
-						setRegionSelected(e.map((regionSelected) => regionSelected.value));
-					}}
-					typeScrollbar="secondary"
-				/>
-				<Collapsible
-					label="Country/Market"
-					name="Search"
-					placeholder="Search"
-					isSearchForm
-					isSearchFormCollpase
-					options={listCountries}
-					isReset={resetFilter}
-					defaultValues={resetFilter ? SEARCH_ALL_VALUE : countriesSelected}
-					onSelectOptions={(e) => {
-						setCountriesSelected(e.map((coutriesSelected) => coutriesSelected.value));
-					}}
-					typeScrollbar="secondary"
-				/>
-				<Collapsible
-					label="Workplace"
-					name="Search"
-					placeholder="Search"
-					isSearchForm
-					isSearchFormCollpase
-					options={listWorkplaces}
-					isReset={resetFilter}
-					defaultValues={resetFilter ? SEARCH_ALL_VALUE : workplaceSelected}
-					onSelectOptions={(e) =>
-						setWorkplaceSelected(e.map((workplaceSelected) => workplaceSelected.value))
-					}
-					typeScrollbar="secondary"
-				/>
-				<Collapsible
-					label="Brands"
-					name="Search"
-					placeholder="Search"
-					isSearchForm
-					isSearchFormCollpase
-					options={listBrands.map((e) => ({
-						label: e.brandName,
-						value: e.brandId,
-					}))}
-					isReset={resetFilter}
-					onSelectOptions={(e) =>
-						e.map((e) => ({
-							value: e.value,
-							label: e.label,
-						}))
-					}
-					typeScrollbar="secondary"
-				/>
-				<Collapsible
-					label="Communities"
-					name="Search"
-					placeholder="Search"
-					isSearchForm
-					isSearchFormCollpase
-					options={listCommunities}
-					isReset={resetFilter}
-					onSelectOptions={(e) =>
-						e.map((e) => ({
-							value: e.value,
-							label: e.label,
-						}))
-					}
-					typeScrollbar="secondary"
-				/>
-				<Input control={control} isSearchFormCollpase placeholder="Search..." typeColor="dgray" />
-				<Button label="Search" onClick={() => console.log('clicked')}></Button>
-				<Button label="Reset Filter"></Button>
-			</div>
+			<form onSubmit={handleSubmit(handleSearchData)}>
+				<div className="flex flex-col gap-1">
+					<Collapsible
+						label="Region"
+						name="Search"
+						placeholder="Search"
+						typeScrollbar="secondary"
+						isSearchForm
+						isSearchFormCollpase
+						defaultCollapsed
+						options={listRegions}
+						isReset={resetFilter}
+						defaultValues={resetFilter ? SEARCH_ALL_VALUE : accounts.filterOptions.regionIds}
+						onSelectOptions={(e) => {
+							setRegionSelected(e.map((regionSelected) => regionSelected.value));
+						}}
+					/>
+					<Collapsible
+						label="Country/Market"
+						name="Search"
+						placeholder="Search"
+						typeScrollbar="secondary"
+						isSearchForm
+						isSearchFormCollpase
+						options={listCountries}
+						isReset={resetFilter}
+						defaultValues={resetFilter ? SEARCH_ALL_VALUE : accounts.filterOptions.countryIds}
+						onSelectOptions={(e) => {
+							setCountriesSelected(e.map((coutriesSelected) => coutriesSelected.value));
+						}}
+					/>
+					<Collapsible
+						label="Workplace"
+						name="Search"
+						placeholder="Search"
+						typeScrollbar="secondary"
+						isSearchForm
+						isSearchFormCollpase
+						options={listWorkplaces}
+						isReset={resetFilter}
+						defaultValues={resetFilter ? SEARCH_ALL_VALUE : accounts.filterOptions.workplaceIds}
+						onSelectOptions={(e) =>
+							setWorkplaceSelected(e.map((workplaceSelected) => workplaceSelected.value))
+						}
+					/>
+					<Collapsible
+						label="Brands"
+						name="Search"
+						placeholder="Search"
+						typeScrollbar="secondary"
+						isSearchForm
+						isSearchFormCollpase
+						options={listBrands.map((e) => ({
+							label: e.brandName,
+							value: e.brandId,
+						}))}
+						isReset={resetFilter}
+						defaultValues={resetFilter ? SEARCH_ALL_VALUE : accounts.filterOptions.brandIds}
+						onSelectOptions={(e) =>
+							e.map((e) => ({
+								value: e.value,
+								label: e.label,
+							}))
+						}
+					/>
+					<Collapsible
+						label="Communities"
+						name="Search"
+						placeholder="Search"
+						typeScrollbar="secondary"
+						isSearchForm
+						isSearchFormCollpase
+						options={listCommunities}
+						isReset={resetFilter}
+						defaultValues={resetFilter ? SEARCH_ALL_VALUE : accounts.filterOptions.communityIds}
+						onSelectOptions={(e) =>
+							e.map((e) => ({
+								value: e.value,
+								label: e.label,
+							}))
+						}
+					/>
+					<Input
+						control={control}
+						isSearchFormCollpase
+						placeholder="Search..."
+						typeColor="dgray"
+						defaultValue={
+							resetFilter ? DEFAULT_USER_FILTER.textSearch : accounts.filterOptions.textSearch
+						}
+					/>
+					<Button label="Search" onClick={() => console.log('clicked')}></Button>
+					<Button label="Reset Filter"></Button>
+				</div>
+			</form>
 			<div className="flex flex-col gap-1">
 				<Collapsible
 					label="Has Access To FO"
 					name="Search"
 					placeholder="Search"
+					typeScrollbar="secondary"
 					isSearchForm
 					isSearchFormCollpase
 					options={IBooleanOptions.map((e) => ({
@@ -347,31 +389,33 @@ const AccountsTab = () => {
 						label: e.label,
 					}))}
 					isReset={resetFilter}
-					defaultValues={resetFilter ? SEARCH_ALL_VALUE : regionSelected}
+					defaultValues={
+						resetFilter ? SEARCH_ALL_VALUE : accounts.filterOptions.hasAccessToFrontOffice
+					}
 					onSelectOptions={(e) => {
 						setRegionSelected(e.map((regionSelected) => regionSelected.value));
 					}}
-					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Role"
 					name="Search"
 					placeholder="Search"
+					typeScrollbar="secondary"
 					isSearchForm
 					isSearchFormCollpase
 					options={listRoles}
 					isReset={resetFilter}
-					defaultValues={resetFilter ? SEARCH_ALL_VALUE : regionSelected}
+					defaultValues={resetFilter ? SEARCH_ALL_VALUE : accounts.filterOptions.frontOfficeRoleIds}
 					onSelectOptions={(e) => {
 						setRegionSelected(e.map((regionSelected) => regionSelected.value));
 					}}
-					typeScrollbar="secondary"
 				/>
 				<Collapsible
 					label="Welcome Email"
 					name="Search"
 					placeholder="Search"
 					isSearchForm
+					typeScrollbar="secondary"
 					isSearchFormCollpase
 					options={IBooleanOptions.map((e) => ({
 						value: e.value,
@@ -382,35 +426,45 @@ const AccountsTab = () => {
 					onSelectOptions={(e) => {
 						setRegionSelected(e.map((regionSelected) => regionSelected.value));
 					}}
-					typeScrollbar="secondary"
 				/>
 			</div>
-			<Table
-				title="User"
-				data={listUsers}
-				columns={columns}
-				enableSort
-				actionButton={[
-					<ActionButton
-						key={1}
-						titleAction="Add a new User"
-						typeIcon={TYPE_ICONS.PLUS_CIRCLE}
-						color={COLORS.WHITE_SNOW}
-						onClick={() => navigate('/')}
-					/>,
-					<ActionButton
-						key={2}
-						titleAction="Import User"
-						typeIcon={TYPE_ICONS.ACCOUNT_PLUS}
-						color={COLORS.WHITE_SNOW}
-						onClick={() => navigate('/')}
-					/>,
-				]}
-				getSortValue={(key: any) => {
-					setDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-					setKeySortTable(key as any);
-				}}
-			/>
+			<div className="flex flex-col items-end gap-5 w-full">
+				<Table
+					title="User"
+					data={listUsers}
+					columns={columns}
+					enableSort
+					isLoading={isFetchingData()}
+					actionButton={[
+						<ActionButton
+							key={1}
+							titleAction="Add a new User"
+							typeIcon={TYPE_ICONS.PLUS_CIRCLE}
+							color={COLORS.WHITE_SNOW}
+							onClick={() => navigate('/')}
+						/>,
+						<ActionButton
+							key={2}
+							titleAction="Import User"
+							typeIcon={TYPE_ICONS.ACCOUNT_PLUS}
+							color={COLORS.WHITE_SNOW}
+							onClick={() => navigate('/')}
+						/>,
+					]}
+					getSortValue={(key: any) => {
+						setDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+						setKeySortTable(key as any);
+					}}
+				/>
+				<Pagination
+					current={pageIndex}
+					defaultCurrent={pageIndex}
+					pageSize={PAGE_SIZE}
+					onChange={(page) => setPageIndex(page)}
+					total={total}
+					showTitle={false}
+				/>
+			</div>
 		</div>
 	);
 };

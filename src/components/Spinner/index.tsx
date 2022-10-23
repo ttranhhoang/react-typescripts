@@ -3,8 +3,8 @@ import { overrideTailwindClasses } from 'tailwind-override';
 import Icon from '../Icon';
 
 interface ISpinner {
-	width: string;
-	height: string;
+	width: number;
+	height: number;
 	color?: string;
 	className?: string;
 }

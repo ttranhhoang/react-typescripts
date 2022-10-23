@@ -22,6 +22,7 @@ module.exports = {
 				success: '#4bae4f',
 				error: '#ef4444',
 			},
+			animation: {},
 		},
 	},
 

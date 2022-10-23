@@ -145,6 +145,7 @@ const Collapsible = (props: ICollapsible) => {
 
 	const handleSearch = (event: any) => {
 		setSearchText(event.target.value.trim());
+		console.log('text', event.target.value);
 	};
 
 	// const handleSelect = useCallback(
@@ -224,8 +225,8 @@ const Collapsible = (props: ICollapsible) => {
 				}
 			}
 			setSelectedOptions(selected);
-			console.log('selected', selected);
-			console.log('option', option);
+			// console.log('selected', selected);
+			// console.log('option', option);
 		},
 		[selectedOptions]
 	);
@@ -242,7 +243,7 @@ const Collapsible = (props: ICollapsible) => {
 				return 'primary-scrollbar';
 		}
 	}, []);
-	console.log('type scrooll bar', typeScrollbar);
+	// console.log('type scrooll bar', typeScrollbar);
 
 	// const Header = useMemo(
 	// 	() => (
@@ -279,13 +280,10 @@ const Collapsible = (props: ICollapsible) => {
 						isOpen ? '-rotate-180' : 'rotate-0'
 					}`}
 				>
-					<Icon type={TYPE_ICONS.CHEVRON} height="24" width="24" color={COLORS.GRAY} />
+					<Icon type={TYPE_ICONS.CHEVRON} height={24} width={24} color={COLORS.GRAY} />
 				</span>
 			</div>
-			<div
-				className="w-full overflow-hidden transition-all linear duration-500 "
-				style={{ height }}
-			>
+			<div className="w-full overflow-hidden transition-all linear duration-500" style={{ height }}>
 				<div ref={ref}>
 					<Input
 						type="text"
@@ -296,6 +294,11 @@ const Collapsible = (props: ICollapsible) => {
 						placeholder={placeholder}
 						isSearchForm={isSearchForm}
 						isSearchFormCollpase={isSearchFormCollpase}
+						onChange={(e) => console.log('comm', e.target.value)}
+					/>
+					<input
+						placeholder="Search"
+						className="text-primary placeholder:text-primary outline-none w-full bg-transparent pl-1"
 						onChange={handleSearch}
 					/>
 

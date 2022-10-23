@@ -1,5 +1,6 @@
 import { IColumnsDefinitionType } from '@/ultils/constants';
 import TableHeader from './TableHeader';
+import TableRows from './TableRows';
 
 interface ITable {
 	title: string;
@@ -7,11 +8,12 @@ interface ITable {
 	enableSort?: boolean;
 	columns: Array<IColumnsDefinitionType>;
 	actionButton?: React.ReactNode[];
+	isLoading: boolean;
 	getSortValue?: (key: any) => void;
 }
 
 const Table = (props: ITable) => {
-	const { title, data, columns, enableSort, actionButton, getSortValue } = props;
+	const { title, data, columns, enableSort, actionButton, isLoading, getSortValue } = props;
 	return (
 		<div className="w-full h-full">
 			<div className="bg-secondary uppercase text-dwhite p-2 rounded-br-2xl relative">
@@ -32,6 +34,7 @@ const Table = (props: ITable) => {
 				enableSort={enableSort}
 				getSortValue={getSortValue}
 			/>
+			<TableRows columns={columns} data={data} isLoading={isLoading} />
 		</div>
 	);
 };

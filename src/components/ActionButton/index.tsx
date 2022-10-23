@@ -6,8 +6,8 @@ interface IActionButton extends HTMLAttributes<HTMLDivElement> {
 	typeIcon: TYPE_ICONS;
 	titleAction: string;
 	color?: string;
-	width?: string;
-	height?: string;
+	width?: number;
+	height?: number;
 }
 
 const ActionButton = (props: IActionButton) => {

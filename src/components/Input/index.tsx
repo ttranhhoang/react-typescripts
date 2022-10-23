@@ -30,7 +30,7 @@ const Input = (props: IInput) => {
 		isSearchFormCollpase,
 		placeholder,
 		className,
-		onChange,
+		// onChange,
 		...otherProps
 	} = props;
 
@@ -60,22 +60,27 @@ const Input = (props: IInput) => {
 					<div className={`flex items-center ${isSearchForm ? '' : 'h-10'}`}>
 						<Icon
 							color={COLORS.ORANGE}
-							width="24"
-							height="30"
+							width={24}
+							height={30}
 							type={TYPE_ICONS.SEARCH}
 							className={`${isSearchForm ? 'block' : 'hidden'}`}
 						/>
 						<Controller
 							name={name ?? ''}
 							control={control}
-							render={({ field: { name, value, ...otherField } }) => (
+							render={({ field: { onChange, name, value, ref, ...otherField } }) => (
 								<input
 									{...otherField}
 									{...otherProps}
+									ref={ref}
 									name={name}
 									type={type}
+									defaultValue={defaultValue}
 									placeholder={placeholder}
-									onChange={onChange}
+									onChange={(e) => {
+										onChange(e.target.value);
+										console.log('checkinput', e.target.value);
+									}}
 									value={value}
 									disabled={disabled}
 									className={`w-full ${colorInput(
@@ -83,7 +88,6 @@ const Input = (props: IInput) => {
 									)} font-bold rounded-md outline-0 p-3 bg-transparent`}
 								/>
 							)}
-							defaultValue={defaultValue}
 						/>
 					</div>
 				</div>
@@ -92,21 +96,22 @@ const Input = (props: IInput) => {
 					<Controller
 						name={name ?? ''}
 						control={control}
-						render={({ field: { name, onChange, value, ...otherField } }) => (
+						render={({ field: { name, value, onChange, ref, ...otherField } }) => (
 							<input
 								{...otherField}
 								{...otherProps}
+								ref={ref}
 								id={name}
 								name={name}
 								type={type}
 								placeholder={name}
+								defaultValue={defaultValue}
 								onChange={(e) => onChange(e.target.value)}
 								value={value}
 								disabled={disabled}
 								className="w-full border text-white font-bold rounded-md outline-0 p-3 bg-transparent transition-all duration-500 placeholder:text-transparent focus:border-b-teal-400 peer"
 							/>
 						)}
-						defaultValue={defaultValue}
 					/>
 					<Label
 						htmlFor={name}

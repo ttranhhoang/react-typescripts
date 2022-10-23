@@ -1,17 +1,11 @@
-import { IGetListUsers } from '@/interfaces/users/users.interface';
-import { action, makeAutoObservable, observable } from 'mobx';
+import { accounts } from './accounts/index';
+import { createContext, useContext } from 'react';
+import { userStore } from './users/index';
 
-class Store {
-	user: IGetListUsers[] = [];
-
-  @observable userCount = 12;
-	constructor() {
-		makeAutoObservable(this.user);
-	}
-
-	createUser(user: IGetListUsers[]) {
-		return (this.user = user);
-	}
-}
-export const store = new Store();
-
+export const Store = {
+	userStore,
+	accounts,
+};
+const Context = createContext(Store);
+export const ContextProvider = Context.Provider;
+export const useStore = () => useContext(Context);

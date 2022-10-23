@@ -67,7 +67,7 @@ const TableHeader = (props: ITableHeader) => {
 			>
 				{renderHeaders}
 			</div>
-			<TableRows columns={columns} data={data} />
+			{/* <TableRows columns={columns} data={data} /> */}
 		</>
 	);
 };
