@@ -16,7 +16,7 @@ function App() {
 		},
 	});
 	return (
-		<div className="app">
+		<div className="app tao test rebase nha">
 			<QueryClientProvider client={queryClient}>
 				<React.Suspense fallback={<Spinner color={COLORS.SECONDARY} height={70} width={70} />}>
 					{router}
